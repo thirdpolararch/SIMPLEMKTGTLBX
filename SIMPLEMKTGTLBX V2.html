@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMPLEMKTGTLBX</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet" />
+  <style>
+    /* Global Reset & Base Styles */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      color: #ecf0f1;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.light-mode {
+      background: linear-gradient(135deg, #f0f0f0, #ffffff);
+      color: #2c3e50;
+    }
+    
+    /* Grid Layout: Header, Nav, Main, Footer */
+    .container {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 10px;
+      position: relative;
+    }
+    header h1 { 
+      font-size: 1.8rem; 
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+
+    /* Niche Selector */
+    #nicheSelector {
+      position: absolute;
+      right: 50px;
+      top: 10px;
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+      background: #009688;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #nicheSelector:hover {
+      background: #00796b;
+    }
+
+    /* About Icon (top-right corner) */
+    #aboutIcon {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: none;
+      border: none;
+      color: #ecf0f1;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    #aboutIcon:hover {
+      transform: scale(1.2);
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      margin: 0 10px;
+    }
+    body.light-mode hr {
+      border-top: 1px solid rgba(0,0,0,0.3);
+    }
+    
+    /* Navigation: Wide, Responsive Buttons */
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 0;
+    }
+    nav button {
+      flex: 1 1 120px;
+      max-width: 180px;
+      background: #009688;
+      color: #ecf0f1;
+      border: none;
+      border-radius: 5px;
+      padding: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    nav button:hover {
+      background: #00796b;
+      transform: scale(1.03);
+    }
+    body.light-mode nav button {
+      background: rgba(200,200,200,0.8);
+      color: #2c3e50;
+    }
+    
+    /* Main Content Area */
+    main {
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+    #mainContent {
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+    }
+    #defaultMessage {
+      font-size: 1.2rem;
+      margin: 20px 0;
+    }
+    .tool-container {
+      display: none;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 10px;
+      animation: fadeIn 0.4s ease;
+    }
+    .tool-container.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.85rem;
+    }
+    footer button#themeToggle {
+      background: #009688;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 5px;
+    }
+    footer button#themeToggle:hover { background: #00796b; }
+    
+    /* Toast Notifications */
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+      z-index: 1000;
+    }
+    body.light-mode #toast {
+      background: rgba(0,0,0,0.7);
+    }
+    
+    /* Inputs, Textareas & Buttons within Tools */
+    .tool-container input,
+    .tool-container textarea,
+    .tool-container select {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.05em; /* Slightly larger for readability */
+      background: rgba(255,255,255,0.2); /* Increase alpha for better contrast */
+      color: inherit;
+    }
+    .tool-container button {
+      background: #009688;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .tool-container button:hover { background: #00796b; }
+    
+    /* Canvas Styling for Image Resizer */
+    .tool-container canvas {
+      max-width: 100%;
+      display: block;
+      margin: 10px auto;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    /* Styling for Emoji & Character Guides */
+    #emojiDatabase, #charGuide {
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+      padding: 8px;
+      margin-top: 10px;
+      text-align: left;
+    }
+    #emojiDatabase ul, #charGuide ul {
+      list-style: disc;
+      padding-left: 20px;
+    }
+    #charWarnings {
+      font-size: 0.9em;
+      color: #ffcc00;
+      margin-top: 5px;
+    }
+    
+    /* Ad Preview Container: Allow Vertical Scrolling */
+    #previewContainer {
+      display: flex; 
+      flex-wrap: wrap; 
+      justify-content: center; 
+      gap: 10px; 
+      margin-top: 15px; 
+      max-height: 300px; 
+      overflow-y: auto;
+    }
+    
+    /* GPT Prompt Wizard Details */
+    #promptHelper details {
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+      margin: 10px 0;
+      padding: 10px;
+      text-align: left;
+      overflow: visible;
+    }
+    #promptHelper details[open] {
+      margin-bottom: 10px;
+    }
+    #promptHelper summary {
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+    .prompt-output {
+      width: 100%;
+      height: 80px;
+      margin-top: 10px;
+      padding: 5px;
+      font-size: 0.9em;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 5px;
+      resize: none;
+    }
+    
+    /* Plan Generator: Increase font size for readability */
+    #planGenerator input, 
+    #planGenerator textarea {
+      font-size: 1.1em;
+    }
+    
+    /* About Modal */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 2000; 
+      left: 0; top: 0; 
+      width: 100%; height: 100%; 
+      overflow: auto; 
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 5px;
+      color: #333;
+      font-family: 'Poppins', sans-serif;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header with Title and Niche Selector + About Icon -->
+    <header>
+      <h1>SIMPLEMKTGTLBX</h1>
+      <select id="nicheSelector">
+        <option value="Basic">Basic</option>
+        <option value="Music (Artist)">Music (Artist)</option>
+        <option value="Music (Venue/Promoter)">Music (Venue/Promoter)</option>
+        <option value="Restaurant/Bar">Restaurant/Bar</option>
+        <option value="Startup">Startup</option>
+        <option value="E-commerce">E-commerce</option>
+      </select>
+      <!-- About Icon in top-right corner -->
+      <button id="aboutIcon" onclick="app.openAbout()" title="About">ℹ️</button>
+    </header>
+    <hr />
+    
+    <!-- Navigation -->
+    <nav>
+      <button onclick="app.showTool('qrCode')">QR Code Generator</button>
+      <button onclick="app.showTool('utmBuilder')">UTM Builder</button>
+      <button onclick="app.showTool('subjectTester')">Email Subject Tester</button>
+      <button onclick="app.showTool('imageResizer')">Image Resizer</button>
+      <button onclick="app.showTool('charCounter')">Character Counter</button>
+      <button onclick="app.showTool('scheduler')">Scheduling Export</button>
+      <button onclick="app.showTool('adPreview')">Ad Previews</button>
+      <button onclick="app.showTool('pixelChecker')">Pixel Checker</button>
+      <button onclick="app.showTool('planGenerator')">Marketing Plan PDF</button>
+      <button onclick="app.showTool('colorPalette')">Color Palette</button>
+      <button onclick="app.showTool('promptHelper')">GPT Prompt Wizard</button>
+    </nav>
+    <hr />
+    
+    <!-- Main Content Area -->
+    <main>
+      <div id="mainContent">
+        <div id="defaultMessage">Select a tool to get started!</div>
+        
+        <!-- QR Code Generator -->
+        <div id="qrCode" class="tool-container">
+          <h2>QR Code Generator</h2>
+          <input id="qrLink" type="text" placeholder="Enter your link here (include https://)" />
+          <button onclick="app.generateQRCode()">Generate QR Code</button>
+          <button onclick="app.resetQRCode()">Reset</button>
+          <canvas id="qrCanvas" style="display:none;"></canvas>
+          <a id="qrDownload" style="display:none;" download="qrcode.png">Download QR Code</a>
+        </div>
+        
+        <!-- UTM Link Builder -->
+        <div id="utmBuilder" class="tool-container">
+          <h2>UTM Link Builder</h2>
+          <input id="utmWebsite" type="text" placeholder="Website URL" />
+          <input id="utmSource" type="text" placeholder="Campaign Source" />
+          <input id="utmMedium" type="text" placeholder="Campaign Medium" />
+          <input id="utmName" type="text" placeholder="Campaign Name" />
+          <button onclick="app.buildUTM()">Generate UTM Link</button>
+          <button onclick="app.resetUTM()">Reset</button>
+          <p id="utmResult"></p>
+          <button onclick="app.copyUTM()">Copy to Clipboard</button>
+        </div>
+        
+        <!-- Email Subject Tester -->
+        <div id="subjectTester" class="tool-container">
+          <h2>Email Subject Tester</h2>
+          <input id="subjectLine" type="text" placeholder="Enter a short subject line (max 50 chars)" oninput="app.testSubject()" maxlength="50" />
+          <button onclick="app.resetSubjectTester()">Reset</button>
+          <p id="subjectFeedback"></p>
+          <div id="emojiDatabase">
+            <strong>Tips & Emojis:</strong>
+            <ul>
+              <li>Keep it between 20–50 characters.</li>
+              <li>Use emojis to add personality: 😀 😃 😊 😉 😎 🚀 🎉 🔥 💡 📝</li>
+              <li>Avoid overused words like "free", "win", "bonus".</li>
+              <li>Short, catchy, and clear works best.</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Image Resizer -->
+        <div id="imageResizer" class="tool-container">
+          <h2>Image Resizer</h2>
+          <input id="resizeFile" type="file" accept="image/*" />
+          <input id="targetWidth" type="number" placeholder="Target Width (px)" />
+          <input id="targetHeight" type="number" placeholder="Target Height (px)" />
+          <label for="resizeMethod">Resize Method:</label>
+          <select id="resizeMethod">
+            <option value="stretch">Stretch</option>
+            <option value="maintain">Maintain Aspect Ratio</option>
+            <option value="blur">Blur Background</option>
+          </select>
+          <label for="downloadFormat">Download Format:</label>
+          <select id="downloadFormat">
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+          </select>
+          <button onclick="app.resizeImage()">Resize Image</button>
+          <button onclick="app.resetImageResizer()">Reset</button>
+          <canvas id="resizeCanvas" style="display:none;"></canvas>
+          <a id="resizeDownload" style="display:none;" download="resized-image.png">Download Resized Image</a>
+        </div>
+        
+        <!-- Character Counter -->
+        <div id="charCounter" class="tool-container">
+          <h2>Character Counter</h2>
+          <textarea id="textToCount" rows="5" placeholder="Type or paste your text here"></textarea>
+          <button onclick="app.resetCharCounter()">Reset</button>
+          <p id="charCount">Characters: 0</p>
+          <p id="charWarnings"></p>
+          <div id="charGuide">
+            <strong>Character Limits & Formatting:</strong>
+            <ul>
+              <li>Twitter: 280 characters</li>
+              <li>Optimal Facebook Post: ~63 characters</li>
+              <li>Email Subject: 20–50 characters</li>
+              <li>LinkedIn Post: Up to 600 characters</li>
+              <li>Use punctuation appropriately and avoid overusing special characters.</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Scheduling Export -->
+        <div id="scheduler" class="tool-container">
+          <h2>Scheduling Export (CSV)</h2>
+          <textarea id="scheduleData" rows="5" placeholder="Enter scheduling data in CSV format.
+Example:
+2025-02-12,09:00,Team Meeting
+2025-02-12,11:00,Client Call"></textarea>
+          <button onclick="app.exportCSV()">Export CSV</button>
+          <button onclick="app.resetScheduler()">Reset</button>
+        </div>
+        
+        <!-- Ad Previews -->
+        <div id="adPreview" class="tool-container">
+          <h2>Social Media Ad Previews</h2>
+          <input id="adTitle" type="text" placeholder="Ad Title" />
+          <textarea id="adText" rows="3" placeholder="Ad Description"></textarea>
+          <input id="adImage" type="file" accept="image/*" />
+          <button onclick="app.generateAdPreview()">Generate Previews</button>
+          <button onclick="app.resetAdPreview()">Reset</button>
+          <div id="previewContainer"></div>
+          <div style="text-align:left; font-size:0.9em; margin-top:10px;">
+            <strong>Ad Preview Tips:</strong>
+            <ul>
+              <li>Ensure images are high-quality and on-brand.</li>
+              <li>If no content is provided, a sample ad will be shown.</li>
+              <li>Keep your ad copy concise and engaging.</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Pixel Checker -->
+        <div id="pixelChecker" class="tool-container">
+          <h2>Google Tag / Facebook Pixel Checker</h2>
+          <textarea id="pixelCode" rows="5" placeholder="Paste your tracking code snippet here"></textarea>
+          <button onclick="app.checkPixels()">Check Code</button>
+          <button onclick="app.resetPixelChecker()">Reset</button>
+          <p id="pixelFeedback"></p>
+          <div style="text-align:left; font-size:0.9em; margin-top:10px;">
+            <strong>Pixel Checker Guide:</strong>
+            <ul>
+              <li>For Google Tag, look for <code>gtag(</code> and your tracking ID.</li>
+              <li>For Facebook Pixel, ensure you see <code>fbq(</code> with <code>init</code> and your Pixel ID.</li>
+              <li>Paste your snippet to verify it contains the expected code.</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Marketing Plan Generator (PDF) -->
+        <div id="planGenerator" class="tool-container">
+          <h2>Marketing Plan Generator</h2>
+          <input id="planBusiness" type="text" placeholder="Business Name" />
+          <textarea id="planExecutive" rows="3" placeholder="Executive Summary"></textarea>
+          <textarea id="planMarket" rows="3" placeholder="Market Analysis"></textarea>
+          <textarea id="planGoals" rows="3" placeholder="Marketing Goals"></textarea>
+          <textarea id="planStrategy" rows="3" placeholder="Strategies & Tactics"></textarea>
+          <input id="planBudget" type="text" placeholder="Budget" />
+          <button onclick="app.generatePlanPDF()">Generate Marketing Plan PDF</button>
+          <button onclick="app.resetPlanGenerator()">Reset</button>
+        </div>
+        
+        <!-- Color Palette Generator -->
+        <div id="colorPalette" class="tool-container">
+          <h2>Brand Color Palette Generator</h2>
+          <input id="baseColor" type="color" value="#009688" />
+          <input id="paletteSwatches" type="number" placeholder="Number of Swatches (min 2)" min="2" max="10" value="4" />
+          <button onclick="app.generateColorPalette()">Generate Palette</button>
+          <button onclick="app.resetColorPalette()">Reset</button>
+          <div id="paletteDisplay" style="margin-top:15px;"></div>
+        </div>
+        
+        <!-- GPT Prompt Wizard -->
+        <div id="promptHelper" class="tool-container">
+          <h2>GPT Prompt Wizard</h2>
+          <p>Customize prompts for your marketing, content, and script needs. (Optimized for GPT-4.)</p>
+          <!-- Social Media Ad Copy -->
+          <details id="promptSocialMedia">
+            <summary><strong>Social Media Ad Copy</strong></summary>
+            <input id="smBusiness" type="text" placeholder="Business Name" />
+            <input id="smProduct" type="text" placeholder="Product/Service" />
+            <textarea id="smFeatures" rows="2" placeholder="Key Features (comma separated)"></textarea>
+            <input id="smAudience" type="text" placeholder="Target Audience" />
+            <input id="smTone" type="text" placeholder="Tone (e.g., energetic, artistic)" />
+            <button onclick="app.generateSocialMediaPrompt()">Generate Prompt</button>
+            <button onclick="app.resetSection('promptSocialMedia')">Reset</button>
+            <textarea id="socialMediaPromptOutput" class="prompt-output" readonly></textarea>
+            <button onclick="app.copyPrompt('socialMediaPromptOutput')">Copy Prompt</button>
+          </details>
+          <!-- Blog Post Outline -->
+          <details id="promptBlog">
+            <summary><strong>Blog Post Outline</strong></summary>
+            <input id="blogTopic" type="text" placeholder="Blog Topic" />
+            <input id="blogAudience" type="text" placeholder="Target Audience" />
+            <input id="blogTone" type="text" placeholder="Tone (e.g., informative, casual)" />
+            <input id="blogKeywords" type="text" placeholder="Keywords (comma separated)" />
+            <button onclick="app.generateBlogOutlinePrompt()">Generate Prompt</button>
+            <button onclick="app.resetSection('promptBlog')">Reset</button>
+            <textarea id="blogPromptOutput" class="prompt-output" readonly></textarea>
+            <button onclick="app.copyPrompt('blogPromptOutput')">Copy Prompt</button>
+          </details>
+          <!-- Product Description -->
+          <details id="promptProduct">
+            <summary><strong>Product Description</strong></summary>
+            <input id="prodName" type="text" placeholder="Product Name" />
+            <textarea id="prodFeatures" rows="2" placeholder="Key Features"></textarea>
+            <textarea id="prodBenefits" rows="2" placeholder="Benefits"></textarea>
+            <input id="prodAudience" type="text" placeholder="Target Audience" />
+            <input id="prodStyle" type="text" placeholder="Style (e.g., persuasive, informative)" />
+            <button onclick="app.generateProductDescriptionPrompt()">Generate Prompt</button>
+            <button onclick="app.resetSection('promptProduct')">Reset</button>
+            <textarea id="prodPromptOutput" class="prompt-output" readonly></textarea>
+            <button onclick="app.copyPrompt('prodPromptOutput')">Copy Prompt</button>
+          </details>
+          <!-- Email Newsletter -->
+          <details id="promptNewsletter">
+            <summary><strong>Email Newsletter</strong></summary>
+            <input id="newsletterSubject" type="text" placeholder="Newsletter Subject" />
+            <textarea id="newsletterContent" rows="2" placeholder="Main Content Points"></textarea>
+            <input id="newsletterCTA" type="text" placeholder="Call-to-Action" />
+            <button onclick="app.generateNewsletterPrompt()">Generate Prompt</button>
+            <button onclick="app.resetSection('promptNewsletter')">Reset</button>
+            <textarea id="newsletterPromptOutput" class="prompt-output" readonly></textarea>
+            <button onclick="app.copyPrompt('newsletterPromptOutput')">Copy Prompt</button>
+          </details>
+          <!-- Landing Page Copy -->
+          <details id="promptLanding">
+            <summary><strong>Landing Page Copy</strong></summary>
+            <input id="landingProduct" type="text" placeholder="Product/Service" />
+            <textarea id="landingUSP" rows="2" placeholder="Unique Selling Proposition"></textarea>
+            <input id="landingTarget" type="text" placeholder="Target Audience" />
+            <button onclick="app.generateLandingPagePrompt()">Generate Prompt</button>
+            <button onclick="app.resetSection('promptLanding')">Reset</button>
+            <textarea id="landingPromptOutput" class="prompt-output" readonly></textarea>
+            <button onclick="app.copyPrompt('landingPromptOutput')">Copy Prompt</button>
+          </details>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 Third Polar Arch</p>
+      <button id="themeToggle">Toggle Theme</button>
+    </footer>
+  </div>
+  
+  <!-- About Modal -->
+  <div id="aboutModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="app.closeAbout()">&times;</span>
+      <h2>About SIMPLEMKTGTLBX</h2>
+      <p>
+        SIMPLEMKTGTLBX is a lightweight, all-client-side marketing toolbox designed to streamline your marketing tasks.
+        Whether you’re generating QR codes, building UTM links, resizing images, or crafting industry-tailored GPT prompts,
+        this tool is built with love for online marketers.
+      </p>
+      <p>
+        Made with ❤️ by <a href="https://thirdpolararch.com" target="_blank">Third Polar Arch</a>.
+        For inquiries, please email <a href="mailto:thirdpolararch@gmail.com">thirdpolararch@gmail.com</a>.
+      </p>
+      <p>
+        Choose your niche from the selector above to get industry-specific defaults and tips!
+      </p>
+    </div>
+  </div>
+  
+  <!-- Toast Notification -->
+  <div id="toast"></div>
+  
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    (function() {
+      "use strict";
+      const app = {
+        currentNiche: "Basic",
+        showTool(id) {
+          document.getElementById("defaultMessage").style.display = "none";
+          const tools = document.querySelectorAll("#mainContent .tool-container");
+          tools.forEach(t => t.classList.remove("active"));
+          const tool = document.getElementById(id);
+          if (tool) tool.classList.add("active");
+        },
+        showToast(message, type = "info") {
+          const toast = document.getElementById("toast");
+          toast.textContent = message;
+          toast.style.opacity = 1;
+          setTimeout(() => { toast.style.opacity = 0; }, 3000);
+        },
+        toggleTheme() {
+          document.body.classList.toggle("light-mode");
+        },
+        openAbout() {
+          document.getElementById("aboutModal").style.display = "block";
+        },
+        closeAbout() {
+          document.getElementById("aboutModal").style.display = "none";
+        },
+        
+        /* Niche Defaults – Update placeholders and hints based on niche selection */
+        applyNicheDefaults(niche) {
+          app.currentNiche = niche;
+          switch(niche) {
+            case "Music (Artist)":
+              document.getElementById("subjectLine").placeholder = "New single release – check it out!";
+              document.getElementById("utmName").placeholder = "new-single-release";
+              document.getElementById("smTone").placeholder = "energetic, artistic";
+              document.getElementById("smFeatures").placeholder = "catchy melody, powerful vocals";
+              break;
+            case "Music (Venue/Promoter)":
+              document.getElementById("subjectLine").placeholder = "Upcoming concert – buy tickets now!";
+              document.getElementById("utmName").placeholder = "concert-event";
+              document.getElementById("smTone").placeholder = "exciting, vibrant";
+              document.getElementById("smFeatures").placeholder = "live performance, star-studded lineup";
+              break;
+            case "Restaurant/Bar":
+              document.getElementById("subjectLine").placeholder = "Tonight's specials – Don't miss out!";
+              document.getElementById("utmName").placeholder = "daily-specials";
+              document.getElementById("smTone").placeholder = "inviting, flavorful";
+              document.getElementById("smFeatures").placeholder = "delicious, fresh, locally-sourced";
+              break;
+            case "Startup":
+              document.getElementById("subjectLine").placeholder = "Introducing our innovative new product!";
+              document.getElementById("utmName").placeholder = "product-launch";
+              document.getElementById("smTone").placeholder = "innovative, disruptive";
+              document.getElementById("smFeatures").placeholder = "cutting-edge technology, unique solution";
+              break;
+            case "E-commerce":
+              document.getElementById("subjectLine").placeholder = "Limited Time Offer – Shop Now!";
+              document.getElementById("utmName").placeholder = "sale-offer";
+              document.getElementById("smTone").placeholder = "persuasive, energetic";
+              document.getElementById("smFeatures").placeholder = "exclusive, trendy, best-sellers";
+              break;
+            default: // Basic
+              document.getElementById("subjectLine").placeholder = "Enter a short subject line (max 50 chars)";
+              document.getElementById("utmName").placeholder = "Campaign Name";
+              document.getElementById("smTone").placeholder = "Tone (e.g., energetic, friendly)";
+              document.getElementById("smFeatures").placeholder = "Key Features (comma separated)";
+          }
+          app.showToast(`Niche set to ${niche}`);
+        },
+
+        /* QR Code Generator */
+        generateQRCode() {
+          const link = document.getElementById("qrLink").value.trim();
+          // Basic URL validation: warn if missing "http" or "https"
+          if (!link.match(/^https?:\/\//)) {
+            return app.showToast("URL should start with http:// or https://", "error");
+          }
+          const canvas = document.getElementById("qrCanvas");
+          if (typeof QRious === "undefined") return app.showToast("QRious library not loaded.", "error");
+          new QRious({ element: canvas, value: link, size: 300 });
+          canvas.style.display = "block";
+          const downloadLink = document.getElementById("qrDownload");
+          downloadLink.href = canvas.toDataURL("image/png");
+          downloadLink.style.display = "inline-block";
+          app.showToast("QR Code generated!");
+        },
+        resetQRCode() {
+          document.getElementById("qrLink").value = "";
+          document.getElementById("qrCanvas").style.display = "none";
+          document.getElementById("qrDownload").style.display = "none";
+        },
+        
+        /* UTM Link Builder */
+        buildUTM() {
+          const website = document.getElementById("utmWebsite").value.trim();
+          const source = document.getElementById("utmSource").value.trim();
+          const medium = document.getElementById("utmMedium").value.trim();
+          const name = document.getElementById("utmName").value.trim();
+          if (!website) return app.showToast("Please enter a website URL.", "error");
+          // Append parameters correctly if URL already contains "?"
+          const separator = website.includes("?") ? "&" : "?";
+          const utmLink = `${website}${separator}utm_source=${encodeURIComponent(source)}&utm_medium=${encodeURIComponent(medium)}&utm_campaign=${encodeURIComponent(name)}`;
+          document.getElementById("utmResult").textContent = utmLink;
+          app.showToast("UTM Link generated!");
+        },
+        copyUTM() {
+          const utmLink = document.getElementById("utmResult").textContent;
+          if (!utmLink) return;
+          navigator.clipboard.writeText(utmLink).then(() => app.showToast("UTM link copied to clipboard!"));
+        },
+        resetUTM() {
+          document.getElementById("utmWebsite").value = "";
+          document.getElementById("utmSource").value = "";
+          document.getElementById("utmMedium").value = "";
+          document.getElementById("utmName").value = "";
+          document.getElementById("utmResult").textContent = "";
+        },
+        
+        /* Email Subject Tester */
+        testSubject() {
+          const subject = document.getElementById("subjectLine").value;
+          let feedback = "";
+          if (subject.length < 20) feedback += "Subject line is too short. ";
+          else if (subject.length > 50) feedback += "Subject line should be shorter. ";
+          else if (subject.length > 30) feedback += "Subject is getting long. ";
+          else feedback += "Length is good. ";
+          ["free", "win", "guarantee", "bonus"].forEach(word => {
+            if (subject.toLowerCase().includes(word)) feedback += `Avoid "${word}" for better deliverability. `;
+          });
+          document.getElementById("subjectFeedback").textContent = feedback;
+        },
+        resetSubjectTester() {
+          document.getElementById("subjectLine").value = "";
+          document.getElementById("subjectFeedback").textContent = "";
+        },
+        
+        /* Image Resizer */
+        resizeImage() {
+          const fileInput = document.getElementById("resizeFile");
+          const targetWidth = parseInt(document.getElementById("targetWidth").value, 10);
+          const targetHeight = parseInt(document.getElementById("targetHeight").value, 10);
+          const method = document.getElementById("resizeMethod").value;
+          const format = document.getElementById("downloadFormat").value;
+          if (!fileInput.files[0]) return app.showToast("Please select an image.", "error");
+          if (!targetWidth || !targetHeight) return app.showToast("Please enter target dimensions.", "error");
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+              const canvas = document.getElementById("resizeCanvas");
+              const ctx = canvas.getContext("2d");
+              canvas.width = targetWidth;
+              canvas.height = targetHeight;
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              
+              if(method === "stretch") {
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+              } else if(method === "maintain") {
+                const ratio = Math.min(targetWidth / img.width, targetHeight / img.height);
+                const newWidth = img.width * ratio;
+                const newHeight = img.height * ratio;
+                const dx = (targetWidth - newWidth) / 2;
+                const dy = (targetHeight - newHeight) / 2;
+                ctx.drawImage(img, dx, dy, newWidth, newHeight);
+              } else if(method === "blur") {
+                ctx.filter = "blur(8px)";
+                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                ctx.filter = "none";
+                const ratio = Math.min(targetWidth / img.width, targetHeight / img.height);
+                const newWidth = img.width * ratio;
+                const newHeight = img.height * ratio;
+                const dx = (targetWidth - newWidth) / 2;
+                const dy = (targetHeight - newHeight) / 2;
+                ctx.drawImage(img, dx, dy, newWidth, newHeight);
+              }
+              canvas.style.display = "block";
+              // Potential future enhancement: estimate final file size
+              const dataURL = canvas.toDataURL("image/" + (format === "jpg" ? "jpeg" : "png"));
+              document.getElementById("resizeDownload").href = dataURL;
+              document.getElementById("resizeDownload").style.display = "inline-block";
+              app.showToast("Image resized!");
+            };
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(fileInput.files[0]);
+        },
+        resetImageResizer() {
+          document.getElementById("resizeFile").value = "";
+          document.getElementById("targetWidth").value = "";
+          document.getElementById("targetHeight").value = "";
+          document.getElementById("resizeMethod").selectedIndex = 0;
+          document.getElementById("downloadFormat").selectedIndex = 0;
+          const canvas = document.getElementById("resizeCanvas");
+          const ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          document.getElementById("resizeDownload").style.display = "none";
+        },
+        
+        /* Character Counter */
+        resetCharCounter() {
+          document.getElementById("textToCount").value = "";
+          document.getElementById("charCount").textContent = "Characters: 0";
+          document.getElementById("charWarnings").textContent = "";
+        },
+        initCharCounter() {
+          document.getElementById("textToCount").addEventListener("input", function() {
+            const count = this.value.length;
+            document.getElementById("charCount").textContent = "Characters: " + count;
+            let warnings = "";
+            if (280 - count <= 10) {
+              warnings += `Only ${280 - count} characters left for Twitter. `;
+            }
+            if (count < 63 && 63 - count <= 10) {
+              warnings += `Only ${63 - count} characters left for an optimal Facebook post. `;
+            }
+            if (count > 63 && count - 63 < 10) {
+              warnings += `Exceeded optimal Facebook post length by ${count - 63} characters. `;
+            }
+            if (600 - count <= 10) {
+              warnings += `Only ${600 - count} characters left for LinkedIn. `;
+            }
+            document.getElementById("charWarnings").textContent = warnings;
+          });
+        },
+        
+        /* Scheduling Export (CSV) */
+        exportCSV() {
+          const data = document.getElementById("scheduleData").value.trim();
+          if (!data) return app.showToast("Please enter scheduling data.", "error");
+          const rows = data.split("\n").map(line =>
+            line.split(",").map(field => `"${field.trim().replace(/"/g, '""')}"`)
+          );
+          const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "schedule.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          app.showToast("CSV exported!");
+        },
+        resetScheduler() {
+          document.getElementById("scheduleData").value = "";
+        },
+        
+        /* Ad Previews */
+        generateAdPreview() {
+          let title = document.getElementById("adTitle").value;
+          let text = document.getElementById("adText").value;
+          // If both fields are blank, generate a sample/fake ad
+          if (!title && !text) {
+            title = "Amazing Product Launch!";
+            text = "Discover the innovation that everyone is talking about. Limited time offer!";
+          }
+          const fileInput = document.getElementById("adImage");
+          const previewContainer = document.getElementById("previewContainer");
+          previewContainer.innerHTML = "";
+          if (fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              app.createAdPreviews(title, text, e.target.result);
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+          } else {
+            app.createAdPreviews(title, text, null);
+          }
+        },
+        createAdPreviews(title, text, imgSrc) {
+          const platforms = ["Meta", "X", "LinkedIn"];
+          const previewContainer = document.getElementById("previewContainer");
+          platforms.forEach(platform => {
+            const preview = document.createElement("div");
+            preview.style.border = "1px solid #ecf0f1";
+            preview.style.borderRadius = "5px";
+            preview.style.padding = "10px";
+            preview.style.width = "250px";
+            preview.style.margin = "10px";
+            preview.innerHTML = `<h3>${platform} Preview</h3>
+              ${imgSrc ? `<img src="${imgSrc}" alt="Ad Image" style="width:100%; border-radius:5px;">` : "<p>No image provided</p>"}
+              <h4>${title}</h4>
+              <p>${text}</p>`;
+            previewContainer.appendChild(preview);
+          });
+          app.showToast("Ad previews generated!");
+        },
+        resetAdPreview() {
+          document.getElementById("adTitle").value = "";
+          document.getElementById("adText").value = "";
+          document.getElementById("adImage").value = "";
+          document.getElementById("previewContainer").innerHTML = "";
+        },
+        
+        /* Pixel Checker */
+        checkPixels() {
+          const code = document.getElementById("pixelCode").value;
+          let feedback = "";
+          feedback += code.includes("gtag(") ? "Google Tag detected. " : "Google Tag not detected. ";
+          feedback += code.includes("fbq(") ? "Facebook Pixel detected." : "Facebook Pixel not detected.";
+          document.getElementById("pixelFeedback").textContent = feedback;
+          app.showToast("Pixel check complete.");
+        },
+        resetPixelChecker() {
+          document.getElementById("pixelCode").value = "";
+          document.getElementById("pixelFeedback").textContent = "";
+        },
+        
+        /* Marketing Plan Generator (PDF) */
+        generatePlanPDF() {
+          const business = document.getElementById("planBusiness").value.trim();
+          const executive = document.getElementById("planExecutive").value.trim();
+          const market = document.getElementById("planMarket").value.trim();
+          const goals = document.getElementById("planGoals").value.trim();
+          const strategy = document.getElementById("planStrategy").value.trim();
+          const budget = document.getElementById("planBudget").value.trim();
+          if (!business) return app.showToast("Please enter a Business Name.", "error");
+          const doc = new window.jspdf.jsPDF();
+          doc.setFont("Helvetica", "normal");
+          doc.setFontSize(16);
+          doc.text(business, 20, 20);
+          doc.setFontSize(12);
+          let yPos = 30;
+          const lineHeight = 7;
+          const addSection = (title, text) => {
+            doc.setFontSize(14);
+            doc.text(title, 20, yPos);
+            yPos += lineHeight;
+            doc.setFontSize(12);
+            const lines = doc.splitTextToSize(text || "N/A", 170);
+            doc.text(lines, 20, yPos);
+            yPos += lines.length * lineHeight + 5;
+          };
+          addSection("Executive Summary:", executive);
+          addSection("Market Analysis:", market);
+          addSection("Marketing Goals:", goals);
+          addSection("Strategies & Tactics:", strategy);
+          addSection("Budget:", budget);
+          doc.save(`${business}-MarketingPlan.pdf`);
+          app.showToast("PDF generated!");
+        },
+        resetPlanGenerator() {
+          document.getElementById("planBusiness").value = "";
+          document.getElementById("planExecutive").value = "";
+          document.getElementById("planMarket").value = "";
+          document.getElementById("planGoals").value = "";
+          document.getElementById("planStrategy").value = "";
+          document.getElementById("planBudget").value = "";
+        },
+        
+        /* Color Palette Generator */
+        generateColorPalette() {
+          const baseColor = document.getElementById("baseColor").value;
+          const numSwatches = parseInt(document.getElementById("paletteSwatches").value, 10) || 4;
+          const hsl = app.hexToHSL(baseColor);
+          const shifts = [];
+          for(let i = 0; i < numSwatches; i++) {
+            shifts.push((360 / numSwatches) * i);
+          }
+          const colors = shifts.map(shift => {
+            let newHue = (hsl.h + shift) % 360;
+            return app.hslToHex(newHue, hsl.s, hsl.l);
+          });
+          const display = document.getElementById("paletteDisplay");
+          display.innerHTML = "";
+          colors.forEach(color => {
+            const swatch = document.createElement("div");
+            swatch.className = "swatch";
+            swatch.style.backgroundColor = color;
+            swatch.textContent = color;
+            display.appendChild(swatch);
+          });
+          app.showToast("Color palette generated!");
+        },
+        resetColorPalette() {
+          document.getElementById("baseColor").value = "#009688";
+          document.getElementById("paletteSwatches").value = 4;
+          document.getElementById("paletteDisplay").innerHTML = "";
+        },
+        hexToHSL(hex) {
+          hex = hex.replace("#", "");
+          let r = parseInt(hex.substring(0,2), 16) / 255;
+          let g = parseInt(hex.substring(2,4), 16) / 255;
+          let b = parseInt(hex.substring(4,6), 16) / 255;
+          let max = Math.max(r, g, b), min = Math.min(r, g, b);
+          let h, s, l = (max + min) / 2;
+          if(max === min) { h = s = 0; }
+          else {
+            let d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            if(max === r) h = (g - b) / d + (g < b ? 6 : 0);
+            else if(max === g) h = (b - r) / d + 2;
+            else h = (r - g) / d + 4;
+            h /= 6;
+          }
+          return { h: h * 360, s: s * 100, l: l * 100 };
+        },
+        hslToHex(h, s, l) {
+          s /= 100; 
+          l /= 100;
+          const c = (1 - Math.abs(2 * l - 1)) * s;
+          const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+          const m = l - c / 2;
+          let r, g, b;
+          if(h < 60) { r = c; g = x; b = 0; }
+          else if(h < 120) { r = x; g = c; b = 0; }
+          else if(h < 180) { r = 0; g = c; b = x; }
+          else if(h < 240) { r = 0; g = x; b = c; }
+          else if(h < 300) { r = x; g = 0; b = c; }
+          else { r = c; g = 0; b = x; }
+          r = Math.round((r + m) * 255);
+          g = Math.round((g + m) * 255);
+          b = Math.round((b + m) * 255);
+          const toHex = n => n.toString(16).padStart(2, "0");
+          return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+        },
+
+        /* GPT Prompt Wizard */
+        generateGPTPrompt(template, data) {
+          return template.replace(/{(.*?)}/g, (_, key) => data[key] || "N/A");
+        },
+        copyPrompt(elementId) {
+          const promptText = document.getElementById(elementId).value;
+          if (!promptText) return;
+          navigator.clipboard.writeText(promptText).then(() => app.showToast("Prompt copied to clipboard!"));
+        },
+        generateSocialMediaPrompt() {
+          const data = {
+            business: document.getElementById("smBusiness").value.trim(),
+            product: document.getElementById("smProduct").value.trim(),
+            features: document.getElementById("smFeatures").value.trim(),
+            audience: document.getElementById("smAudience").value.trim(),
+            tone: document.getElementById("smTone").value.trim()
+          };
+          if (!data.business || !data.product) return app.showToast("Please fill in at least Business Name and Product/Service.", "error");
+          const template = "Write an engaging social media ad copy for {business} promoting {product}. Emphasize key features: {features} to capture the interest of {audience}. The tone should be {tone}. (Recommended: Use GPT-4)";
+          const prompt = app.generateGPTPrompt(template, data);
+          document.getElementById("socialMediaPromptOutput").value = prompt;
+        },
+        generateBlogOutlinePrompt() {
+          const data = {
+            topic: document.getElementById("blogTopic").value.trim(),
+            audience: document.getElementById("blogAudience").value.trim(),
+            tone: document.getElementById("blogTone").value.trim(),
+            keywords: document.getElementById("blogKeywords").value.trim()
+          };
+          if (!data.topic) return app.showToast("Please enter a blog topic.", "error");
+          const template = 'Generate a detailed blog post outline on the topic "{topic}" for {audience}. Include engaging headings and subheadings and incorporate keywords such as {keywords}. Maintain a {tone} tone. (Recommended: Use GPT-4)';
+          const prompt = app.generateGPTPrompt(template, data);
+          document.getElementById("blogPromptOutput").value = prompt;
+        },
+        generateProductDescriptionPrompt() {
+          const data = {
+            prodName: document.getElementById("prodName").value.trim(),
+            features: document.getElementById("prodFeatures").value.trim(),
+            benefits: document.getElementById("prodBenefits").value.trim(),
+            audience: document.getElementById("prodAudience").value.trim(),
+            style: document.getElementById("prodStyle").value.trim()
+          };
+          if (!data.prodName) return app.showToast("Please enter the product name.", "error");
+          const template = 'Write a compelling product description for {prodName}. Highlight key features: {features} and benefits: {benefits}. The description should resonate with {audience} and be written in a {style} style. (Recommended: Use GPT-4)';
+          const prompt = app.generateGPTPrompt(template, data);
+          document.getElementById("prodPromptOutput").value = prompt;
+        },
+        generateNewsletterPrompt() {
+          const data = {
+            subject: document.getElementById("newsletterSubject").value.trim(),
+            content: document.getElementById("newsletterContent").value.trim(),
+            cta: document.getElementById("newsletterCTA").value.trim()
+          };
+          if (!data.subject) return app.showToast("Please enter a newsletter subject.", "error");
+          const template = 'Draft an engaging email newsletter for a campaign with the subject "{subject}". Include key content points: {content} and a strong call-to-action: {cta}. (Recommended: Use GPT-4)';
+          const prompt = app.generateGPTPrompt(template, data);
+          document.getElementById("newsletterPromptOutput").value = prompt;
+        },
+        generateLandingPagePrompt() {
+          const data = {
+            product: document.getElementById("landingProduct").value.trim(),
+            usp: document.getElementById("landingUSP").value.trim(),
+            audience: document.getElementById("landingTarget").value.trim()
+          };
+          if (!data.product) return app.showToast("Please enter a product/service.", "error");
+          const template = 'Write persuasive landing page copy for {product}. Emphasize the unique selling proposition: {usp} and appeal to {audience}. (Recommended: Use GPT-4)';
+          const prompt = app.generateGPTPrompt(template, data);
+          document.getElementById("landingPromptOutput").value = prompt;
+        }
+      };
+      
+      document.getElementById("themeToggle").addEventListener("click", app.toggleTheme);
+      document.getElementById("nicheSelector").addEventListener("change", function() {
+        app.applyNicheDefaults(this.value);
+      });
+      app.initCharCounter();
+      // Live update for color palette generator
+      document.getElementById("baseColor").addEventListener("input", app.generateColorPalette);
+      document.getElementById("paletteSwatches").addEventListener("input", app.generateColorPalette);
+      
+      window.app = app;
+    })();
+  </script>
+</body>
+</html>
